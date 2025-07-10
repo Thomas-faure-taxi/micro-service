@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     await user.save();
     res.status(201).json({ message: 'Utilisateur enregistré' });
   } catch (err) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ error: err.message });
   }
 };
 
@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ error: 'Utilisateur non trouvé' });
+    if (!user) return res.status(401).json({ error: error });
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: error });
@@ -27,6 +27,6 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (err) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    res.status(500).json({ error: err.message });
   }
 };
