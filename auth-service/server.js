@@ -1,8 +1,8 @@
 // server.js
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+const connectDB = require('./db');
 
 const app = express();
 app.use(cors());
@@ -10,11 +10,13 @@ app.use(express.json());
 
 app.use('/', require('./routes/auth.routes'));
 
-mongoose.connect(process.env.MONGO_URI)
+connectDB()
   .then(() => {
-    console.log('MongoDB connecté');
     app.listen(process.env.PORT, () => {
-      console.log(`Microservice Auth lancé sur le port ${process.env.PORT}`);
+      console.log(`auth service lancé sur le port ${process.env.PORT}`);
     });
   })
-  .catch(err => console.error('Erreur MongoDB', err));
+  .catch(err => {
+    console.error('Erreur lors de la connexion à MongoDB', err);
+    process.exit(1);
+  });
