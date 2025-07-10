@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     await user.save();
     res.status(201).json({ message: 'Utilisateur enregistré' });
   } catch (err) {
-    res.status(400).json({ error: 'Email déjà utilisé ou invalide' });
+    res.status(400).json({ error: error });
   }
 };
 
@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Utilisateur non trouvé' });
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ error: 'Mot de passe incorrect' });
+    if (!valid) return res.status(401).json({ error: error });
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
